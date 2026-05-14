@@ -1,6 +1,8 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+import joblib
+
 from tensorflow.keras.models import load_model
 
 # ==============================
@@ -14,10 +16,12 @@ st.set_page_config(
 )
 
 # ==============================
-# LOAD MODEL
+# LOAD MODEL AND SCALER
 # ==============================
 
 model = load_model("model.keras")
+
+scaler = joblib.load("scaler.pkl")
 
 # ==============================
 # TITLE
@@ -74,7 +78,10 @@ turbidity = st.number_input("Turbidity", value=4.0)
 
 if st.button("Predict Water Quality"):
 
-    # Prepare input
+    # ==============================
+    # PREPARE INPUT DATA
+    # ==============================
+
     input_data = np.array([[
         ph,
         hardness,
@@ -87,8 +94,17 @@ if st.button("Predict Water Quality"):
         turbidity
     ]])
 
-    # Predict
-    prediction = model.predict(input_data)
+    # ==============================
+    # SCALE INPUT DATA
+    # ==============================
+
+    input_data_scaled = scaler.transform(input_data)
+
+    # ==============================
+    # MODEL PREDICTION
+    # ==============================
+
+    prediction = model.predict(input_data_scaled)
 
     prediction_value = prediction[0][0]
 
@@ -182,6 +198,7 @@ if st.button("Predict Water Quality"):
 st.header("Model Performance Graphs")
 
 try:
+
     st.image(
         "accuracy_graph.png",
         caption="Model Accuracy Graph"
@@ -198,6 +215,7 @@ try:
     )
 
 except:
+
     st.warning("Training graphs not found.")
 
 # ==============================
@@ -216,6 +234,7 @@ st.markdown("""
 - NumPy
 - Matplotlib
 - Scikit-learn
+- Joblib
 """)
 
 st.markdown("""

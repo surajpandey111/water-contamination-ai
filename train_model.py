@@ -1,3 +1,4 @@
+import joblib
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -45,7 +46,7 @@ print("\nScaling Data...")
 scaler = StandardScaler()
 
 X = scaler.fit_transform(X)
-
+joblib.dump(scaler, "scaler.pkl")
 # ==============================
 # TRAIN TEST SPLIT
 # ==============================
